@@ -10,3 +10,5 @@ command:
 
   test:
     - "vendor/bin/phpunit"
+
+
