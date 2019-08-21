@@ -34,13 +34,15 @@ class OticReader extends OticBase
 
     public function read(array $cols = null) : int
     {
+
         $index = 0;
         while($data = $this->reader->read()) {
             if ($cols !== null && ! in_array($data["colname"], $cols)) {
-                //$this->reader->ignore_previous_column();
+                $this->reader->ignore_previous_column();
                 continue;
             }
             $index++;
+
             ($this->callback)($data["ts"], $data["colname"], $data["value"]);
         }
         $this->reader->close();

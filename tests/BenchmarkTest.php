@@ -29,8 +29,10 @@ class BenchmarkTest extends TestCase
         $writer->open("/tmp/outbench.otic");
 
         phore_out("start writing");
-        for ($i=0; $i<100000; $i++) {
-            $writer->inject($i, "someName" . ($i % 100), "moooo $i" );
+        for ($i=0; $i<86400; $i++) {
+            for ($i2=0; $i2<10; $i2++) {
+                $writer->inject($i, "someName" . $i2, "moo" . ($i + $i2));
+            }
         }
         phore_out("end writing");
 
@@ -49,7 +51,7 @@ class BenchmarkTest extends TestCase
             //echo "\n$timestamp;$colname;$value";
         });
 
-        $read = $reader->read(["moo"]);
+        $read = $reader->read(["someName1", "someName2", "someName3"]);
         phore_out("end reading ($read)");
         $this->assertTrue(true);
     }
