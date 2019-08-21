@@ -41,7 +41,6 @@ class BenchmarkTest extends TestCase
     }
 
 
-
     public function testBenchmarkReader()
     {
         $reader = new OticReader();
