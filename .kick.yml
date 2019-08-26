@@ -12,3 +12,7 @@ command:
     - "vendor/bin/phpunit"
 
 
+  bench:
+    - "sudo phpdismod xdebug"
+    - "vendor/bin/phpunit"
+

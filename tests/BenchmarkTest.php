@@ -29,8 +29,8 @@ class BenchmarkTest extends TestCase
         $writer->open("/tmp/outbench.otic");
 
         phore_out("start writing");
-        for ($i=0; $i<86400; $i++) {
-            for ($i2=0; $i2<10; $i2++) {
+        for ($i=0; $i<8640; $i++) {
+            for ($i2=0; $i2<10000; $i2++) {
                 $writer->inject($i, "someName" . $i2, "moo" . ($i + $i2));
             }
         }
