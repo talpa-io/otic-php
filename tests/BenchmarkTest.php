@@ -30,7 +30,7 @@ class BenchmarkTest extends TestCase
 
         phore_out("start writing");
         for ($i=0; $i<8640; $i++) {
-            for ($i2=0; $i2<10000; $i2++) {
+            for ($i2=0; $i2<100; $i2++) {
                 $writer->inject($i, "someName" . $i2, "moo" . ($i + $i2));
             }
         }
