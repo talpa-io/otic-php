@@ -24,15 +24,15 @@ class WriterTest extends TestCase
         $writer = new OticWriter();
         $writer->open("/tmp/out.otic");
 
-        $writer->inject(1234, "someName", 1234);
+        $writer->inject(1234, "someName", 1234, "someUnit");
 
         $writer->close();
 
 
         $reader = new OticReader();
         $reader->open("/tmp/out.otic");
-        $reader->setOnDataCallback(function ($timestamp, $colname, $value) {
-            echo "\n$timestamp;$colname;$value";
+        $reader->setOnDataCallback(function ($timestamp, $colname, $value, $mu) {
+            echo "\n$timestamp;$colname;$value;$mu";
         });
         $reader->read();
 

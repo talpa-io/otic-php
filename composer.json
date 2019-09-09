@@ -10,7 +10,11 @@
   ],
   "require": {
     "php": ">=7.1",
-    "phore/core": "dev-master"
+    "phore/core": "dev-master",
+    "phore/filesystem": "dev-master",
+    "phore/cli": "dev-master",
+    "phore/log": "dev-master",
+    "phore/system": "dev-master"
   },
   "suggest": {
   },

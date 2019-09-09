@@ -13,4 +13,4 @@ Open Telemetry Interchange Containers Format
 
 | Interval | Schreiben | Lesen |
 |----------|-----------|-------|
-| 
+|          |           |       |

@@ -37,13 +37,16 @@ class OticReader extends OticBase
 
         $index = 0;
         while($data = $this->reader->read()) {
-            if ($cols !== null && ! in_array($data["colname"], $cols)) {
+            [$colname, $mu] = explode(":", $data["colname"]);
+
+            if ($cols !== null && ! in_array($colname, $cols)) {
                 $this->reader->ignore_previous_column();
                 continue;
             }
             $index++;
 
-            ($this->callback)($data["ts"], $data["colname"], $data["value"]);
+
+            ($this->callback)($data["ts"], $colname, $data["value"], $mu);
         }
         $this->reader->close();
         //$this->reader = null;
