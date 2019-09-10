@@ -3,6 +3,16 @@
 Open Telemetry Interchange Containers Format
 
 
+## Install using composer
+
+```
+composer require talpa-io/otic-php
+vendor/talpa-io/otic-php/lib/install-otic-extension.sh
+```
+
+
+
+
 ## Example
 
 

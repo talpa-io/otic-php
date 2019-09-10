@@ -18,6 +18,9 @@
   },
   "suggest": {
   },
+  "bin": [
+    "bin/otic.php"
+  ],
   "autoload": {
     "psr-4": {
       "Otic\\": "src/"

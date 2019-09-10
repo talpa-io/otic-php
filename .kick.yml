@@ -6,7 +6,7 @@ apache_fallback_resource: "/index.php"
 command:
   build:
     - "composer update"
-    - "lib/install-urdsfmt.sh"
+    - "lib/install-otic-extension.sh"
 
   test:
     - "vendor/bin/phpunit"
