@@ -160,7 +160,6 @@ $group->command("unpack")
         $reader = new OticReader();
         $reader->open($input);
         $reader->setOnDataCallback(function ($ts, $colName, $value, $measure) use ($out) {
-            echo "Read!";
             $out->fputcsv([$ts, $colName, $measure, $value], "\t");
         });
         $reader->read($incCols);
