@@ -27,10 +27,10 @@ class OticWriter extends OticBase
 
     public function inject (float $timestamp, string $columnName, $value, string $mu)
     {
-        $columnName = $columnName . ":" . $mu;
+        $columnName = $columnName;
 
         if ( ! isset($this->columns[$columnName])) {
-            $this->columns[$columnName] = $this->writer->define_column($columnName);
+            $this->columns[$columnName] = $this->writer->define_column($columnName, $mu);
         }
 
         $this->writer->write($this->columns[$columnName], $timestamp, $value);

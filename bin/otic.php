@@ -93,17 +93,24 @@ function packData(FileStream $in, string $out, bool $failOnErr, bool $indurad5co
 $group->command("pack")
     ->withString("input", "the input file")
     ->withBool("stdin", "read from strdin")
+    ->withBool("stdout", "send data to stdout")
     ->withBool("indurad5colQuickfix", "Quick fix to fix indurad 5 column format")
     ->withBool("failOnErr", "Fail hard on input error (testing)")
     ->withString("afterCmd", "Run this script after each file compleded (Replace %f with converted filename, %if name of input file)")
     ->withString("out", "output file")
-    ->run(function($input, bool $stdin, string $out, bool $indurad5colQuickfix, bool $failOnErr, string $afterCmd=null) {
+    ->run(function($input, bool $stdin, bool $indurad5colQuickfix, bool $failOnErr, string $out=null, bool $stdout=false, string $afterCmd=null) {
         $inFiles = null;
         if ($stdin) {
             $in = phore_file("php://stdin")->asFile()->fopen("r");
         } else {
             $inFiles = glob($input);
             //$in = phore_file($input)->assertFile()->fopen("r");
+        }
+
+        if ($out !== null) {
+            $out = phore_file($out);
+        } else {
+            $out = new PhoreTempFile("otic-");
         }
 
         if ($inFiles !== null) {
@@ -133,6 +140,8 @@ $group->command("pack")
                 throw new \InvalidArgumentException("No output defined.");
             }
             packData($in, $out, $failOnErr, $indurad5colQuickfix);
+            if ($stdout)
+                echo $out->get_contents();
         }
 
 

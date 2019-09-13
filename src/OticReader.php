@@ -16,6 +16,9 @@ class OticReader extends OticBase
 
     private $callback;
 
+    private $firstTimestamp = null;
+    private $lastTimestamp = null;
+
     public function open (string $filename)
     {
         $this->reader = new \UrdtsfmtReader();
@@ -30,6 +33,17 @@ class OticReader extends OticBase
     }
 
 
+    public function getFirstTimestamp() : ?int
+    {
+        return $this->firstTimestamp;
+    }
+
+    public function getLastTimestamp() : ?int
+    {
+        if ($this->reader !== null)
+            throw new \InvalidArgumentException("last timestamp is only available after read() has completed.");
+        return $this->lastTimestamp;
+    }
 
 
     public function read(array $cols = null) : int
@@ -37,7 +51,8 @@ class OticReader extends OticBase
 
         $index = 0;
         while($data = $this->reader->read()) {
-            [$colname, $mu] = explode(":", $data["colname"]);
+            $colname = $data["colname"];
+            $mu = $data["metadata"];
 
             if ($cols !== null && ! in_array($colname, $cols)) {
                 $this->reader->ignore_previous_column();
@@ -45,10 +60,14 @@ class OticReader extends OticBase
             }
             $index++;
 
+            if ($this->firstTimestamp !== null)
+                $this->firstTimestamp = $data["ts"];
 
             ($this->callback)($data["ts"], $colname, $data["value"], $mu);
         }
+        $this->lastTimestamp = $this->reader->get_closing_timestamp();
         $this->reader->close();
+        $this->reader = null;
         //$this->reader = null;
         return $index;
     }
