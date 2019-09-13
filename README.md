@@ -7,7 +7,7 @@ Open Telemetry Interchange Containers Format
 
 ```
 composer require talpa/otic-php
-vendor/talpa-io/otic-php/lib/install-otic-extension.sh
+vendor/talpa/otic-php/lib/install-otic-extension.sh
 ```
 
 
