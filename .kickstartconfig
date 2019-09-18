@@ -1,0 +1,4 @@
+KICKSTART_DOCKER_RUN_OPTS="-v /media/talpashare:/talpashare"
+
+# External Port bindings
+KICKSTART_PORTS=""

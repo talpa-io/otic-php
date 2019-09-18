@@ -33,6 +33,18 @@ class OticWriter extends OticBase
             $this->columns[$columnName] = $this->writer->define_column($columnName, $mu);
         }
 
+        if ($value === "") {
+            $value = null;
+        } elseif (is_numeric($value)) {
+            if (strpos($value, "e") !== false) {
+                $value = (float)$value;
+            } elseif (strpos($value, ".") !== false) {
+                $value = (float)$value;
+            } else {
+                $value = (int)$value;
+            }
+        }
+
         $this->writer->write($this->columns[$columnName], $timestamp, $value);
     }
 
