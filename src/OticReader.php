@@ -71,6 +71,28 @@ class OticReader extends OticBase
         //$this->reader = null;
         return $index;
     }
+    
+    
+    public function readGenerator(array $cols = null) : \Generator 
+    {
+        $index = 0;
+        while($data = $this->reader->read()) {
+            $colname = $data["colname"];
+            
+            if ($this->firstTimestamp !== null)
+                $this->firstTimestamp = $data["ts"];
+            
+            if ($cols !== null && ! in_array($colname, $cols)) {
+                $this->reader->ignore_previous_column();
+                continue;
+            }
+            $index++;
+            yield $data;
+        }
+        $this->lastTimestamp = $this->reader->get_closing_timestamp();
+        $this->reader->close();
+        $this->reader = null;
+    }
 
 
 
