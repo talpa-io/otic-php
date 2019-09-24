@@ -62,7 +62,7 @@ class OticReader extends OticBase
             }
             $index++;
 
-            if ($this->firstTimestamp !== null)
+            if ($this->firstTimestamp === null)
                 $this->firstTimestamp = $data["ts"];
 
             ($this->callback)($data["ts"], $colname, $data["value"], $mu);
@@ -81,7 +81,7 @@ class OticReader extends OticBase
         while($data = $this->reader->read()) {
             $colname = $data["colname"];
             
-            if ($this->firstTimestamp !== null)
+            if ($this->firstTimestamp === null)
                 $this->firstTimestamp = $data["ts"];
             
             if ($cols !== null && ! in_array($colname, $cols)) {
