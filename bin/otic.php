@@ -9,62 +9,67 @@
 
 namespace App;
 
+use InvalidArgumentException;
 use Otic\OticReader;
 use Otic\OticWriter;
 use Phore\Cli\CliController;
 use Phore\FileSystem\FileStream;
 use Phore\FileSystem\PhoreTempFile;
-use Phore\Log\Logger\PhoreEchoLogger;
-use Phore\Log\PhoreLog;
+use Phore\Log\Logger\PhoreEchoLoggerDriver;
+use Phore\Log\PhoreLogger;
 
 
-if (file_exists(__DIR__ . "/../vendor/autoload.php"))
+if (file_exists(__DIR__ . "/../vendor/autoload.php")) {
     require __DIR__ . "/../vendor/autoload.php";
-else
+} else {
     require __DIR__ . "/../../../autoload.php";
+}
 
-$group = \Phore\Cli\CliController::GetInstance()->group("otic");
+$group = CliController::GetInstance()->group("otic");
 
 
-
-
-function packData(FileStream $in, string $out, bool $failOnErr, bool $indurad5colQuickfix, callable $onFileReady=null) {
+function packData(FileStream $in, string $out, bool $failOnErr, bool $indurad5colQuickfix, callable $onFileReady = null)
+{
     $writer = $writer = new OticWriter();
 
     $writer->open($out);
 
-    PhoreLog::Init(new PhoreEchoLogger());
+    PhoreLogger::Init(new PhoreEchoLoggerDriver());
     $minTime = strtotime("2018-01-01 00:00:00");
     $firstTs = null;
-    while ( ! $in->feof()) {
+    while (!$in->feof()) {
         $data = $in->freadcsv(0, "\t");
-        if ($data === null)
+        if ($data === null) {
             continue;
-        if (count($data) === 0)
+        }
+        if (count($data) === 0) {
             continue;
+        }
 
         if ($indurad5colQuickfix) {
-            if ( ! is_array($data) || count($data) !== 5 ) {
-                if ($failOnErr)
-                    throw new \InvalidArgumentException("Line malformed: " . print_r($data, true));
-                phore_log()->warn("Ignoring line " . print_r ($data, true));
+            if (!is_array($data) || count($data) !== 5) {
+                if ($failOnErr) {
+                    throw new InvalidArgumentException("Line malformed: " . print_r($data, true));
+                }
+                phore_log()->warn("Ignoring line " . print_r($data, true));
                 continue;
             }
         } else {
-            if ( ! is_array($data) || count($data) !== 4 ) {
-                if ($failOnErr)
-                    throw new \InvalidArgumentException("Line malformed: " . print_r($data, true));
-                phore_log()->warn("Ignoring line " . print_r ($data, true));
+            if (!is_array($data) || count($data) !== 4) {
+                if ($failOnErr) {
+                    throw new InvalidArgumentException("Line malformed: " . print_r($data, true));
+                }
+                phore_log()->warn("Ignoring line " . print_r($data, true));
                 continue;
             }
         }
 
 
-
         $timestamp = $data[0];
         if ($timestamp < $minTime) {
-            if ($failOnErr)
-                throw new \InvalidArgumentException("Line malformed: " . print_r($data, true));
+            if ($failOnErr) {
+                throw new InvalidArgumentException("Line malformed: " . print_r($data, true));
+            }
             phore_log()->warn("Timestamp $timestamp before 2018");
             continue;
         }
@@ -76,8 +81,9 @@ function packData(FileStream $in, string $out, bool $failOnErr, bool $indurad5co
             $value = $data[4];
         }
 
-        if ($firstTs === null)
+        if ($firstTs === null) {
             $firstTs = $timestamp;
+        }
         //phore_log("Ts: {$timestamp} ColName: $colName Measure: {$mu} Value: {$value}");
         $writer->inject($timestamp, $colName, $value, $mu);
     }
@@ -85,8 +91,9 @@ function packData(FileStream $in, string $out, bool $failOnErr, bool $indurad5co
     $in->fclose();
 
     phore_log()->info("OK Imported " . date("Y-m-d H:i:s", $firstTs) . " - " . date("Y-m-d H:i:s", @$timestamp));
-    if ($onFileReady)
+    if ($onFileReady) {
         $onFileReady();
+    }
 }
 
 
@@ -96,9 +103,18 @@ $group->command("pack")
     ->withBool("stdout", "send data to stdout")
     ->withBool("indurad5colQuickfix", "Quick fix to fix indurad 5 column format")
     ->withBool("failOnErr", "Fail hard on input error (testing)")
-    ->withString("afterCmd", "Run this script after each file compleded (Replace %f with converted filename, %if name of input file)")
+    ->withString("afterCmd",
+        "Run this script after each file compleded (Replace %f with converted filename, %if name of input file)")
     ->withString("out", "output file")
-    ->run(function($input, bool $stdin, bool $indurad5colQuickfix, bool $failOnErr, string $out=null, bool $stdout=false, string $afterCmd=null) {
+    ->run(function (
+        $input,
+        bool $stdin,
+        bool $indurad5colQuickfix,
+        bool $failOnErr,
+        string $out = null,
+        bool $stdout = false,
+        string $afterCmd = null
+    ) {
         $inFiles = null;
         if ($stdin) {
             $in = phore_file("php://stdin")->asFile()->fopen("r");
@@ -122,28 +138,28 @@ $group->command("pack")
                 $in = phore_file($inFile)->fopen("r");
 
 
+                packData($in, $outTmpFile, $failOnErr, $indurad5colQuickfix,
+                    function () use ($afterCmd, $outTmpFile, $inFile) {
+                        phore_log("Done");
+                        $afterCmd = str_replace("%f", (string)$outTmpFile, $afterCmd);
+                        $afterCmd = str_replace("%if", (string)$inFile, $afterCmd);
+                        if ($afterCmd !== "") {
+                            phore_out("Running afterCmd: '$afterCmd'...");
+                            phore_exec($afterCmd);
+                            phore_out("Done (afterCmd)");
+                        }
 
-                packData($in, $outTmpFile, $failOnErr, $indurad5colQuickfix, function () use ($afterCmd, $outTmpFile, $inFile) {
-                    phore_log("Done");
-                    $afterCmd = str_replace("%f", (string) $outTmpFile, $afterCmd);
-                    $afterCmd = str_replace("%if", (string) $inFile, $afterCmd);
-                    if ($afterCmd !== "") {
-                        phore_out("Running afterCmd: '$afterCmd'...");
-                        phore_exec($afterCmd);
-                        phore_out("Done (afterCmd)");
-                    }
-
-                });
+                    });
             }
         } else {
             if ($out === null) {
-                throw new \InvalidArgumentException("No output defined.");
+                throw new InvalidArgumentException("No output defined.");
             }
             packData($in, $out, $failOnErr, $indurad5colQuickfix);
-            if ($stdout)
+            if ($stdout) {
                 echo $out->get_contents();
+            }
         }
-
 
 
     });
@@ -154,7 +170,7 @@ $group->command("unpack")
     ->withBool("stdout", "Write to stdout")
     ->withString("out", "Output file")
     ->withString("include", "Include coloums", null)
-    ->run (function ($input, $out, bool $stdout, $include=null) {
+    ->run(function ($input, $out, bool $stdout, $include = null) {
         if ($stdout) {
             $out = phore_file("php://stdout")->fopen("w");
         } else {
@@ -163,8 +179,9 @@ $group->command("unpack")
 
 
         $incCols = null;
-        if ($include !== null)
+        if ($include !== null) {
             $incCols = explode(";", $include);
+        }
 
         $reader = new OticReader();
         $reader->open($input);
