@@ -9,6 +9,7 @@
 
 namespace App;
 
+use Otic\OticConfig;
 use Otic\OticReader;
 use Otic\OticWriter;
 use Phore\Cli\CliController;
@@ -36,6 +37,11 @@ function packData(FileStream $in, string $out, bool $failOnErr, bool $indurad5co
     PhoreLog::Init(new PhoreEchoLogger());
     $minTime = strtotime("2018-01-01 00:00:00");
     $firstTs = null;
+    $middleWareSource = OticConfig::GetWriterMiddleWareSource();
+    $middleWareDrain = OticConfig::GetWriterMiddleWareDrain();
+    $middleWareDrain->setNext($writer);
+
+
     while ( ! $in->feof()) {
         $data = $in->freadcsv(0, "\t");
         if ($data === null)
@@ -43,43 +49,8 @@ function packData(FileStream $in, string $out, bool $failOnErr, bool $indurad5co
         if (count($data) === 0)
             continue;
 
-        if ($indurad5colQuickfix) {
-            if ( ! is_array($data) || count($data) !== 5 ) {
-                if ($failOnErr)
-                    throw new \InvalidArgumentException("Line malformed: " . print_r($data, true));
-                phore_log()->warn("Ignoring line " . print_r ($data, true));
-                continue;
-            }
-        } else {
-            if ( ! is_array($data) || count($data) !== 4 ) {
-                if ($failOnErr)
-                    throw new \InvalidArgumentException("Line malformed: " . print_r($data, true));
-                phore_log()->warn("Ignoring line " . print_r ($data, true));
-                continue;
-            }
-        }
-
-
-
-        $timestamp = $data[0];
-        if ($timestamp < $minTime) {
-            if ($failOnErr)
-                throw new \InvalidArgumentException("Line malformed: " . print_r($data, true));
-            phore_log()->warn("Timestamp $timestamp before 2018");
-            continue;
-        }
-        $colName = $data[1];
-        $mu = $data[2];
-        $value = $data[3];
-        if ($indurad5colQuickfix) {
-            $mu = $data[3];
-            $value = $data[4];
-        }
-
-        if ($firstTs === null)
-            $firstTs = $timestamp;
         //phore_log("Ts: {$timestamp} ColName: $colName Measure: {$mu} Value: {$value}");
-        $writer->inject($timestamp, $colName, $value, $mu);
+        $middleWareSource->message($data);
     }
     $writer->close();
     $in->fclose();
@@ -92,13 +63,14 @@ function packData(FileStream $in, string $out, bool $failOnErr, bool $indurad5co
 
 $group->command("pack")
     ->withString("input", "the input file")
+    ->withString("autoload", "php file to load additional middleware")
     ->withBool("stdin", "read from strdin")
     ->withBool("stdout", "send data to stdout")
     ->withBool("indurad5colQuickfix", "Quick fix to fix indurad 5 column format")
     ->withBool("failOnErr", "Fail hard on input error (testing)")
     ->withString("afterCmd", "Run this script after each file compleded (Replace %f with converted filename, %if name of input file)")
     ->withString("out", "output file")
-    ->run(function($input, bool $stdin, bool $indurad5colQuickfix, bool $failOnErr, string $out=null, bool $stdout=false, string $afterCmd=null) {
+    ->run(function($input, bool $stdin, bool $indurad5colQuickfix, bool $failOnErr, string $out=null, bool $stdout=false, string $afterCmd=null, string $autoload=null) {
         $inFiles = null;
         if ($stdin) {
             $in = phore_file("php://stdin")->asFile()->fopen("r");
@@ -106,6 +78,11 @@ $group->command("pack")
             $inFiles = glob($input);
             //$in = phore_file($input)->assertFile()->fopen("r");
         }
+
+        if ($autoload !== null) {
+            require $autoload;
+        }
+
 
         if ($out !== null) {
             $out = phore_file($out);

@@ -9,12 +9,13 @@
 namespace Otic;
 
 
-class OticWriter extends OticBase
+class OticWriter extends OticBase implements OticMiddleware
 {
 
     private $writer;
 
     private $columns = [];
+
 
     public function open (string $filename)
     {
@@ -23,6 +24,27 @@ class OticWriter extends OticBase
         $this->writer->columns = [];
     }
 
+
+    /**
+     *
+     * Expects
+     * ts(float) Timestamp
+     * colname(string) ColumnName
+     * value(mixed)
+     * metadata(string)
+     *
+     * @param array $data
+     */
+    public function message(array $data)
+    {
+        $this->inject($data["ts"], $data["colname"], $data["value"], $data["metadata"]);
+    }
+
+
+    public function setNext(OticMiddleware $next)
+    {
+        throw new \InvalidArgumentException("OticWriter is drain. You cannot call setNext() on drains.");
+    }
 
 
     public function inject (float $timestamp, string $columnName, $value, string $mu)
