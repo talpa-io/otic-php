@@ -9,6 +9,7 @@
 namespace Otic\mw;
 
 
+use InvalidArgumentException;
 use Otic\AbstractOticMiddleware;
 
 class InduradMiddleware extends AbstractOticMiddleware {
@@ -26,22 +27,22 @@ class InduradMiddleware extends AbstractOticMiddleware {
     {
         if ( ! is_array($data) || count($data) !== 5 ) {
             if ($this->failOnErr)
-                throw new \InvalidArgumentException("Line malformed: " . print_r($data, true));
-            phore_log()->warn("Ignoring line " . print_r ($data, true));
+                throw new InvalidArgumentException("Line malformed: " . print_r($data, true));
+            phore_log()->warning("Ignoring line " . print_r ($data, true));
             return;
         }
 
         $timestamp = $data[0];
         if ($timestamp < $this->minTs) {
             if ($this->failOnErr)
-                throw new \InvalidArgumentException("Line malformed: " . print_r($data, true));
-            phore_log()->warn("Timestamp $timestamp before 2018");
+                throw new InvalidArgumentException("Line malformed: " . print_r($data, true));
+            phore_log()->warning("Timestamp $timestamp before 2018");
             return;
         }
         $colName = $data[1];
-        $mu = $data[3];
+        $metaData = $data[3];
         $value = $data[4];
 
-        $this->next->message(["ts"=>$timestamp, "colname"=>$colName, "value"=>$value, "metadata" => $mu]);
+        $this->next->message(["ts"=>$timestamp, "colname"=>$colName, "value"=>$value, "metadata" => $metaData]);
     }
 }

@@ -28,7 +28,7 @@ class DefaultMiddleware extends AbstractOticMiddleware
         if ( ! is_array($data) || count($data) !== 4 ) {
             if ($this->failOnErr)
                 throw new \InvalidArgumentException("Line malformed: " . print_r($data, true));
-            phore_log()->warn("Ignoring line " . print_r ($data, true));
+            phore_log()->warning("Ignoring line " . print_r ($data, true));
             return;
         }
 
@@ -36,13 +36,13 @@ class DefaultMiddleware extends AbstractOticMiddleware
         if ($timestamp < $this->minTs) {
             if ($this->failOnErr)
                 throw new \InvalidArgumentException("Line malformed: " . print_r($data, true));
-            phore_log()->warn("Timestamp $timestamp before 2018");
+            phore_log()->warning("Timestamp $timestamp before 2018");
             return;
         }
         $colName = $data[1];
-        $mu = $data[2];
+        $metaData = $data[2];
         $value = $data[3];
 
-        $this->next->message(["ts"=>$timestamp, "colname"=>$colName, "value"=>$value, "metadata" => $mu]);
+        $this->next->message(["ts"=>$timestamp, "colname"=>$colName, "value"=>$value, "metadata" => $metaData]);
     }
 }
