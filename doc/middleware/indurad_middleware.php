@@ -6,8 +6,10 @@
  * Time: 15:17
  */
 
-namespace Demo;
 
 
-use Otic\AbstractOticMiddleware;
+namespace Otic;
 
+use Otic\mw\InduradMiddleware;
+
+OticConfig::AddWriterMiddleWare(new InduradMiddleware());

@@ -34,7 +34,7 @@ class TbfcCmdLineTest extends TestCase
      */
     public function testTbfcInduradHotFixPack()
     {
-        phore_exec("/opt/bin/otic.php --otic --pack --indurad5colQuickfix --failOnErr --input=$this->MOCK_5COL_BASIC_DATA --out=/tmp/out.tbfc");
+        phore_exec("/opt/bin/otic.php --otic --pack --autoload=/opt/doc/middleware/indurad_middleware.php --failOnErr --input=$this->MOCK_5COL_BASIC_DATA --out=/tmp/out.tbfc");
         phore_exec("/opt/bin/otic.php --otic --unpack --input=/tmp/out.tbfc --out=/tmp/out_compare.csv");
 
         $this->assertFileEquals($this->MOCK_4COL_BASIC_DATA, "/tmp/out_compare.csv");

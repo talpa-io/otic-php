@@ -23,8 +23,10 @@ class OticConfig
     }
 
 
-    public static function GetWriterMiddleWareSource() : OticMiddleware
+    public static function GetWriterMiddleWareSource() : ?OticMiddleware
     {
+        if (count (self::$writerMiddleware) === 0)
+            return null;
         return self::$writerMiddleware[0];
     }
 

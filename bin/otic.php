@@ -10,6 +10,7 @@
 namespace App;
 
 
+use Otic\mw\DefaultMiddleware;
 use Otic\OticConfig;
 
 use InvalidArgumentException;
@@ -41,9 +42,12 @@ function packData(FileStream $in, string $out, bool $failOnErr, bool $indurad5co
     PhoreLogger::Init(new PhoreEchoLoggerDriver());
     $firstTs = null;
     $middleWareSource = OticConfig::GetWriterMiddleWareSource();
-    $middleWareDrain = OticConfig::GetWriterMiddleWareDrain();
+    if ($middleWareSource !== null) {
+        $middleWareDrain = OticConfig::GetWriterMiddleWareDrain();
+    } else {
+        $middleWareSource = $middleWareDrain = new DefaultMiddleware();
+    }
     $middleWareDrain->setNext($writer);
-
 
 
     while (!$in->feof()) {
