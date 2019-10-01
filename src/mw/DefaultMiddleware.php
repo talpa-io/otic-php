@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: matthias
  * Date: 01.10.19
- * Time: 15:18
+ * Time: 15:38
  */
 
 namespace Otic\mw;
@@ -11,7 +11,8 @@ namespace Otic\mw;
 
 use Otic\AbstractOticMiddleware;
 
-class InduradMiddleware extends AbstractOticMiddleware {
+class DefaultMiddleware extends AbstractOticMiddleware
+{
 
     private $failOnErr = true;
 
@@ -24,7 +25,7 @@ class InduradMiddleware extends AbstractOticMiddleware {
 
     public function message(array $data)
     {
-        if ( ! is_array($data) || count($data) !== 5 ) {
+        if ( ! is_array($data) || count($data) !== 4 ) {
             if ($this->failOnErr)
                 throw new \InvalidArgumentException("Line malformed: " . print_r($data, true));
             phore_log()->warn("Ignoring line " . print_r ($data, true));
@@ -39,8 +40,8 @@ class InduradMiddleware extends AbstractOticMiddleware {
             return;
         }
         $colName = $data[1];
-        $mu = $data[3];
-        $value = $data[4];
+        $mu = $data[2];
+        $value = $data[3];
 
         $this->next->message(["ts"=>$timestamp, "colname"=>$colName, "value"=>$value, "metadata" => $mu]);
     }

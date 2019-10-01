@@ -19,6 +19,8 @@ class OticReader extends OticBase
     private $firstTimestamp = null;
     private $lastTimestamp = null;
 
+    public $datasetsRead = 0;
+    
     public function open (string $filename)
     {
         $this->reader = new \UrdtsfmtReader();
@@ -60,7 +62,7 @@ class OticReader extends OticBase
             }
             $index++;
 
-            if ($this->firstTimestamp !== null)
+            if ($this->firstTimestamp === null)
                 $this->firstTimestamp = $data["ts"];
 
             ($this->callback)($data["ts"], $colname, $data["value"], $mu);
@@ -70,6 +72,28 @@ class OticReader extends OticBase
         $this->reader = null;
         //$this->reader = null;
         return $index;
+    }
+    
+    
+    public function readGenerator(array $cols = null) : \Generator 
+    {
+        $this->datasetsRead = 0;
+        while($data = $this->reader->read()) {
+            $colname = $data["colname"];
+            
+            if ($this->firstTimestamp === null)
+                $this->firstTimestamp = $data["ts"];
+            
+            if ($cols !== null && ! in_array($colname, $cols)) {
+                $this->reader->ignore_previous_column();
+                continue;
+            }
+            $this->datasetsRead++;
+            yield $data;
+        }
+        $this->lastTimestamp = $this->reader->get_closing_timestamp();
+        $this->reader->close();
+        $this->reader = null;
     }
 
 

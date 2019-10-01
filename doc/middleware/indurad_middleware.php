@@ -11,14 +11,3 @@ namespace Demo;
 
 use Otic\AbstractOticMiddleware;
 
-class InduradMiddleware extends AbstractOticMiddleware {
-
-
-
-
-
-    public function message(array $data)
-    {
-
-    }
-}
