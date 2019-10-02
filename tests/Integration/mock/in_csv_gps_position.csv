@@ -1,2 +1,1 @@
-1550000000.1234	signal1	rpm	10
 1539194139.371277	gps_position	nmea_gpgga_message	-	{ pos: [8.382785,51.327636,551.283000], utc_time: 64539.000000, pos_mode: 5, tracked_sats: 12, hdop: 0.830000, corr_age: 1.000000, sta_id: 111}

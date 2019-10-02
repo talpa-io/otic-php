@@ -16,6 +16,7 @@ class TbfcCmdLineTest extends TestCase
 
     private $MOCK_4COL_BASIC_DATA = __DIR__ . "/mock/in_csv_4col.csv";
     private $MOCK_5COL_BASIC_DATA = __DIR__ . "/mock/in_csv_5col.csv";
+    private $MOCK_GPS_POSITION= __DIR__ . "/mock/in_csv_gps_position.csv";
     private $MOCK_REAL_DATA = __DIR__ . "/mock/test_real_data.txt";
 
     public function testTbfcDefaultPack()
@@ -42,10 +43,10 @@ class TbfcCmdLineTest extends TestCase
 
     public function testTbfcGpsPosition()
     {
-        phore_exec("/opt/bin/otic.php --otic --pack --autoload=/opt/doc/middleware/gps_position_middleware.php --failOnErr --input=$this->MOCK_4COL_BASIC_DATA --out=/tmp/out.tbfc");
+        phore_exec("/opt/bin/otic.php --otic --pack --autoload=/opt/doc/middleware/gps_position_middleware.php --failOnErr --input=$this->MOCK_GPS_POSITION --out=/tmp/out.tbfc");
         phore_exec("/opt/bin/otic.php --otic --unpack --input=/tmp/out.tbfc --out=/tmp/out_compare.csv");
 
-        $this->assertFileEquals($this->MOCK_4COL_BASIC_DATA, "/tmp/out_compare.csv");
+        $this->assertFileEquals($this->MOCK_GPS_POSITION, "/tmp/out_compare.csv");
     }
 
     /*
