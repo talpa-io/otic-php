@@ -18,7 +18,7 @@ class OticConfig
     {
         self::$writerMiddleware[] = $oticMiddleware;
         if (count (self::$writerMiddleware) > 1) {
-            self::$writerMiddleware[count (self::$writerMiddleware) - 1]->setNext($oticMiddleware);
+            self::$writerMiddleware[count (self::$writerMiddleware) - 2]->setNext($oticMiddleware);
         }
     }
 

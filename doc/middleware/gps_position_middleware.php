@@ -13,5 +13,7 @@ namespace Otic;
 
 
 use Otic\mw\GpsPositionMiddleware;
+use Otic\mw\InduradMiddleware;
 
+OticConfig::AddWriterMiddleWare(new InduradMiddleware());
 OticConfig::AddWriterMiddleWare(new GpsPositionMiddleware());

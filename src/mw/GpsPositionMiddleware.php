@@ -11,12 +11,23 @@ class GpsPositionMiddleware extends AbstractOticMiddleware
     public function message(array $data)
     {
         $this->next->message($data);
-        if ($data[1] !== "gps_position") {
+        if ($data["colname"] !== "gps_position") {
             return;
         }
-        $value = $data[3];
 
-        $this->next->message($data);
-        return;
+        $jsonValues = json5_decode($data["value"]);
+
+        foreach ($jsonValues as $jsonKey => $jsonValue){
+            $timestamp = $data["ts"];
+            $colName = $jsonKey;
+
+            if (is_array($jsonValue)){
+                $value = "[" . implode(',', $jsonValue) ."]";
+            }else{
+                $value = $jsonValue;
+            }
+
+            $this->next->message(["ts"=>$timestamp, "colname"=>$colName, "value"=>$value, "metadata" => "-"]);
+        }
     }
 }

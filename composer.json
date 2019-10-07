@@ -14,7 +14,8 @@
     "phore/filesystem": "dev-master",
     "phore/cli": "dev-master",
     "phore/log": "dev-master",
-    "phore/system": "dev-master"
+    "phore/system": "dev-master",
+    "colinodell/json5": "^3.0@dev"
   },
   "suggest": {
   },
