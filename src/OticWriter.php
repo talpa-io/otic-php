@@ -9,6 +9,9 @@
 namespace Otic;
 
 
+use Phore\Log\Logger\PhoreEchoLoggerDriver;
+use Psr\Log\LogLevel;
+
 class OticWriter extends OticBase implements OticMiddleware
 {
 
@@ -19,6 +22,7 @@ class OticWriter extends OticBase implements OticMiddleware
 
     public function open (string $filename)
     {
+        
         $this->writer = new \UrdtsfmtWriter();
         $this->writer->open($filename);
         $this->writer->columns = [];
@@ -43,14 +47,14 @@ class OticWriter extends OticBase implements OticMiddleware
 
     public function setNext(OticMiddleware $next)
     {
-        throw new \InvalidArgumentException("OticWriter is drain. You cannot call setNext() on drains.");
+        throw new \InvalidArgumentException("OticWriter is last element of chain. You cannot call setNext() here.");
     }
 
 
     public function inject (float $timestamp, string $columnName, $value, string $mu)
     {
         $columnName = $columnName;
-
+                
         if ( ! isset($this->columns[$columnName])) {
             $this->columns[$columnName] = $this->writer->define_column($columnName, $mu);
         }
@@ -62,11 +66,13 @@ class OticWriter extends OticBase implements OticMiddleware
                 $value = (float)$value;
             } elseif (strpos($value, ".") !== false) {
                 $value = (float)$value;
+                if ($value < 0.00000000001 && $value > -0.0000000001)
+                    $value = 0;
             } else {
                 $value = (int)$value;
             }
         }
-
+        
         $this->writer->write($this->columns[$columnName], $timestamp, $value);
     }
 

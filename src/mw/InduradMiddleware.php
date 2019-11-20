@@ -25,6 +25,8 @@ class InduradMiddleware extends AbstractOticMiddleware {
 
     public function message(array $data)
     {
+        static $lastTs = 0;
+        
         if ( ! is_array($data) || count($data) !== 5 ) {
             if ($this->failOnErr)
                 throw new InvalidArgumentException("Line malformed: " . print_r($data, true));
@@ -39,6 +41,13 @@ class InduradMiddleware extends AbstractOticMiddleware {
             phore_log()->warning("Timestamp $timestamp before 2018");
             return;
         }
+        
+        if ($timestamp < $lastTs) {
+            phore_log()->warning("Timestamp $timestamp before lastTs: $lastTs");
+            return;
+        }
+        $lastTs = $timestamp;
+        
         $colName = $data[1];
         $metaData = $data[3];
         $value = $data[4];
