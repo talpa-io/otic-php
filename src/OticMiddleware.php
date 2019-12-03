@@ -11,8 +11,15 @@ namespace Otic;
 
 interface OticMiddleware
 {
+    /**
+     * 
+     * @param array|null $data
+     * @return mixed
+     */
     public function message(array $data);
-
+    
+    public function onClose();
+    
     public function setNext(OticMiddleware $next);
 }
 

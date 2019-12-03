@@ -24,5 +24,10 @@ abstract class AbstractOticMiddleware implements OticMiddleware
         $this->next = $next;
     }
 
+    public function onClose()
+    {
+        if ($this->next !== null)
+            $this->next->onClose();
+    }
 
 }

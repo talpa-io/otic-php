@@ -51,6 +51,12 @@ class OticWriter extends OticBase implements OticMiddleware
     }
 
 
+    public function onClose()
+    {
+        // TODO: Implement onClose() method.
+    }
+
+
     public function inject (float $timestamp, string $columnName, $value, string $mu)
     {
         $columnName = $columnName;

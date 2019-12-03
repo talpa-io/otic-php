@@ -65,7 +65,8 @@ function packData(FileStream $in, string $out, bool $failOnErr, bool $indurad5co
     }
     $writer->close();
     $in->fclose();
-
+    phore_log()->info("Done Calling onClose() handler");
+    $middleWareSource->onClose();
     phore_log()->info("OK Imported " . date("Y-m-d H:i:s", $firstTs) . " - ");
     if ($onFileReady) {
         $onFileReady();
