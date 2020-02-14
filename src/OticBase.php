@@ -12,13 +12,19 @@ namespace Otic;
 class OticBase
 {
 
-
     protected function loadExtensionIfNeeded()
     {
-        if ( ! extension_loaded("urdtsfmt")) {
-            throw new \InvalidArgumentException("urdtsfmt extension missing");
+        if ( ! extension_loaded("otic")) {
+            throw new \InvalidArgumentException("libotic_php extension missing");
         }
     }
+
+//    protected function loadExtensionIfNeeded()
+//    {
+//        if ( ! extension_loaded("urdtsfmt")) {
+//            throw new \InvalidArgumentException("urdtsfmt extension missing");
+//        }
+//    }
 
     public function __construct()
     {

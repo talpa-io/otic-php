@@ -1,102 +1,64 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: matthias
- * Date: 20.08.19
- * Time: 11:25
- */
+
 
 namespace Otic;
 
 
 class OticReader extends OticBase
 {
+    private $file;
+    /**
+     * @var OticUnpack
+     */
+    private $unpacker;
+    /**
+     * @var OticUnpackChannel
+     */
+    private $channel;
 
-    private $reader;
-
-    private $callback;
-
-    private $firstTimestamp = null;
-    private $lastTimestamp = null;
-
-    public $datasetsRead = 0;
-    
     public function open (string $filename)
     {
-        $this->reader = new \UrdtsfmtReader();
-        $this->reader->open($filename);
-
+        echo "\nopen new otic reader\n";
+        $this->file = fopen($filename, "r");
+        $this->unpacker = new OticUnpack($this->file);
+        $this->isParsed = false;
     }
-
 
     public function setOnDataCallback(callable $cb)
     {
-        $this->callback = $cb;
+        $this->channel = $this->unpacker->selectChannel(1, $cb);
     }
-
 
     public function getFirstTimestamp() : ?int
     {
-        return $this->firstTimestamp;
+        return $this->getTimeInterval(1)[0];
     }
 
     public function getLastTimestamp() : ?int
     {
-        if ($this->reader !== null)
-            throw new \InvalidArgumentException("last timestamp is only available after read() has completed.");
-        return $this->lastTimestamp;
+        return $this->getTimeInterval(1)[1];
     }
 
+    public function getTimeInterval(int $channelId) : array {
+        return $this->channel->getTimeInterval();
+    }
 
     public function read(array $cols = null) : int
     {
+        if($cols !== null)
+            $this->channel->setFetchList(...$cols);
 
-        $index = 0;
-        while($data = $this->reader->read()) {
-            $colname = $data["colname"];
-            $mu = $data["metadata"];
-
-            if ($cols !== null && ! in_array($colname, $cols)) {
-                $this->reader->ignore_previous_column();
-                continue;
-            }
-            $index++;
-
-            if ($this->firstTimestamp === null)
-                $this->firstTimestamp = $data["ts"];
-
-            ($this->callback)($data["ts"], $colname, $data["value"], $mu);
+        while (!feof($this->file)) {
+            $this->unpacker->parse();
         }
-        $this->lastTimestamp = $this->reader->get_closing_timestamp();
-        $this->reader->close();
-        $this->reader = null;
-        //$this->reader = null;
-        return $index;
-    }
-    
-    
-    public function readGenerator(array $cols = null) : \Generator 
-    {
-        $this->datasetsRead = 0;
-        while($data = $this->reader->read()) {
-            $colname = $data["colname"];
-            
-            if ($this->firstTimestamp === null)
-                $this->firstTimestamp = $data["ts"];
-            
-            if ($cols !== null && ! in_array($colname, $cols)) {
-                $this->reader->ignore_previous_column();
-                continue;
-            }
-            $this->datasetsRead++;
-            yield $data;
-        }
-        $this->lastTimestamp = $this->reader->get_closing_timestamp();
-        $this->reader->close();
-        $this->reader = null;
+        $this->close();
+
+        return 123;
     }
 
-
-
-
+    public function close() {
+        echo "\nclose new otic reader\n";
+        $this->unpacker->close();
+        fclose($this->file);
+    }
 }

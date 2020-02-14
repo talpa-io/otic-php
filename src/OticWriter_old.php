@@ -1,59 +1,70 @@
 <?php
-
+/**
+ * Created by PhpStorm.
+ * User: matthias
+ * Date: 20.08.19
+ * Time: 11:26
+ */
 
 namespace Otic;
 
 
-use Otic\OticBase;
-use Otic\OticMiddleware;
-use Otic\OticPack;
-use Otic\OticPackChannel;
+use Phore\Log\Logger\PhoreEchoLoggerDriver;
+use Psr\Log\LogLevel;
 
-class OticWriter extends OticBase implements OticMiddleware
+class OticWriter_old extends OticBase implements OticMiddleware
 {
-    private $file;
-    private $packer;
-    private $columns;
-    /**
-     * @var OticPackChannel
-     */
-    private $channel;
+
+    private $writer;
+
+    private $columns = [];
+
 
     public function open (string $filename)
     {
-        echo "\nopen new otic writer\n";
-        $this->file = fopen($filename, "w");
-        $this->packer = new OticPack($this->file);
-        $this->channel = $this->packer->defineChannel(1, 0, 0);
-        $this->columns = [];
+
+        $this->writer = new \UrdtsfmtWriter();
+        $this->writer->open($filename);
+        $this->writer->columns = [];
     }
 
+
     /**
-     * @inheritDoc
+     *
+     * Expects
+     * ts(float) Timestamp
+     * colname(string) ColumnName
+     * value(mixed)
+     * metadata(string)
+     *
+     * @param array $data
      */
     public function message(array $data)
     {
         $this->inject($data["ts"], $data["colname"], $data["value"], $data["metadata"]);
     }
 
-    public function onClose()
-    {
-        // TODO: Implement onClose() method.
-    }
 
     public function setNext(OticMiddleware $next)
     {
         throw new \InvalidArgumentException("OticWriter is last element of chain. You cannot call setNext() here.");
     }
 
-    public function close() {
-        echo "\nclose new otic writer\n";
-        $this->packer->close();
-        fclose($this->file);
+
+    public function onClose()
+    {
+        // TODO: Implement onClose() method.
     }
+
 
     public function inject (float $timestamp, string $columnName, $value, string $mu)
     {
+        $columnName = $columnName;
+
+        if ( ! isset($this->columns[$columnName])) {
+            $this->columns[$columnName] = $this->writer->define_column($columnName, $mu);
+        }
+
         if ($value === "") {
             $value = null;
         } elseif (is_numeric($value)) {
@@ -67,8 +78,14 @@ class OticWriter extends OticBase implements OticMiddleware
                 $value = (int)$value;
             }
         }
-        $this->channel->inject($timestamp, $columnName, $mu, $value);
 
-//        $this->writer->write($this->columns[$columnName], $timestamp, $value);
+        $this->writer->write($this->columns[$columnName], $timestamp, $value);
     }
+
+
+    public function close()
+    {
+        $this->writer->close();
+    }
+
 }
