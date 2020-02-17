@@ -21,7 +21,6 @@ class OticWriter extends OticBase implements OticMiddleware
 
     public function open (string $filename)
     {
-        echo "\nopen new otic writer\n";
         $this->file = fopen($filename, "w");
         $this->packer = new OticPack($this->file);
         $this->channel = $this->packer->defineChannel(1, 0, 0);
@@ -47,7 +46,6 @@ class OticWriter extends OticBase implements OticMiddleware
     }
 
     public function close() {
-        echo "\nclose new otic writer\n";
         $this->packer->close();
         fclose($this->file);
     }

@@ -18,7 +18,6 @@ class OticReader extends OticBase
 
     public function open (string $filename)
     {
-        echo "\nopen new otic reader\n";
         $this->file = fopen($filename, "r");
         $this->unpacker = new OticUnpack($this->file);
         $this->isParsed = false;
@@ -57,7 +56,6 @@ class OticReader extends OticBase
     }
 
     public function close() {
-        echo "\nclose new otic reader\n";
         $this->unpacker->close();
         fclose($this->file);
     }
