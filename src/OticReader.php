@@ -61,4 +61,17 @@ class OticReader extends OticBase
         $this->unpacker->close();
         fclose($this->file);
     }
+
+    public function readGenerator(array $cols = null) {
+        $data = [];
+        $this->setOnDataCallback(function ($ts, $name, $unit, $value) use (&$data)  {
+            $d['ts']=$ts;
+            $d['colname']=$name;
+            $d['metadata']=$unit;
+            $d['value']=$value;
+            $data[] = $d;
+        });
+        $this->read($cols);
+        return $data;
+    }
 }

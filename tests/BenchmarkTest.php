@@ -47,12 +47,27 @@ class BenchmarkTest extends TestCase
         $reader = new OticReader();
         $reader->open("/tmp/outbench.otic");
         phore_out("start reading");
-        $reader->setOnDataCallback(function ($timestamp, $colname, $value, $mu) {
-            //echo "\n$timestamp;$colname;$value";
+        $read = 0;
+        $reader->setOnDataCallback(function ($timestamp, $colname, $unit, $value) use (&$read) {
+            $read++;
+//            echo "\n$timestamp;$colname;$value;$unit";
         });
 
         $read = $reader->read(["someName1", "someName2", "someName3"]);
         phore_out("end reading ($read)");
+        $this->assertTrue(true);
+    }
+
+    public function testBenchmarkReadGenerator() {
+        $reader = new OticReader();
+        $reader->open("/tmp/outbench.otic");
+        phore_out("start reading generator");
+        $read=0;
+        foreach ($reader->readGenerator(["someName1", "someName2", "someName3"]) as $data) {
+            $read++;
+        }
+
+        phore_out("end reading generator ($read)");
         $this->assertTrue(true);
     }
 
