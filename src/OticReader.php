@@ -63,6 +63,7 @@ class OticReader extends OticBase
     }
 
     public function readGenerator(array $cols = null) {
+
         $data = [];
         $this->setOnDataCallback(function ($ts, $name, $unit, $value) use (&$data)  {
             $d['ts']=$ts;
@@ -71,7 +72,18 @@ class OticReader extends OticBase
             $d['value']=$value;
             $data[] = $d;
         });
-        $this->read($cols);
-        return $data;
+
+        if($cols !== null)
+            $this->channel->setFetchList(...$cols);
+
+        while (!feof($this->file)) {
+            $this->unpacker->parse();
+            foreach ($data as $line) {
+                yield $line;
+            }
+            $data = [];
+        }
+        $this->close();
     }
+
 }

@@ -44,30 +44,34 @@ class BenchmarkTest extends TestCase
 
     public function testBenchmarkReader()
     {
+        $data = [];
         $reader = new OticReader();
         $reader->open("/tmp/outbench.otic");
         phore_out("start reading");
-        $read = 0;
-        $reader->setOnDataCallback(function ($timestamp, $colname, $unit, $value) use (&$read) {
-            $read++;
-//            echo "\n$timestamp;$colname;$value;$unit";
+        $reader->setOnDataCallback(function ($timestamp, $colname, $unit, $value) use (&$data) {
+            $data[]['ts'] = $timestamp;
+            $data[]['name'] = $colname;
+            $data[]['unit'] = $unit;
+            $data[]['val'] = $value;
         });
 
-        $read = $reader->read(["someName1", "someName2", "someName3"]);
-        phore_out("end reading ($read)");
+        $reader->read();
+        phore_out("end reading " . count($data));
         $this->assertTrue(true);
     }
 
     public function testBenchmarkReadGenerator() {
+        $data = [];
         $reader = new OticReader();
         $reader->open("/tmp/outbench.otic");
         phore_out("start reading generator");
-        $read=0;
-        foreach ($reader->readGenerator(["someName1", "someName2", "someName3"]) as $data) {
-            $read++;
+        foreach ($reader->readGenerator() as $line) {
+            $data[]['ts'] = $line['ts'];
+            $data[]['name'] = $line['colname'];
+            $data[]['unit'] = $line['metadata'];
+            $data[]['val'] = $line['value'];
         }
-
-        phore_out("end reading generator ($read)");
+        phore_out("end reading generator" . count($data));
         $this->assertTrue(true);
     }
 
