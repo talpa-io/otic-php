@@ -16,11 +16,12 @@ class OticReader extends OticBase
      */
     private $channel;
 
+    public $datasetsRead = 0;
+
     public function open (string $filename)
     {
         $this->file = fopen($filename, "r");
         $this->unpacker = new OticUnpack($this->file);
-        $this->isParsed = false;
     }
 
     public function setOnDataCallback(callable $cb)
@@ -77,6 +78,7 @@ class OticReader extends OticBase
         while (!feof($this->file)) {
             $this->unpacker->parse();
             foreach ($data as $line) {
+                $this->datasetsRead++;
                 yield $line;
             }
             $data = [];
