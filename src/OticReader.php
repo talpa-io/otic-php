@@ -65,11 +65,7 @@ class OticReader extends OticBase
 
         $data = [];
         $this->setOnDataCallback(function ($ts, $name, $unit, $value) use (&$data)  {
-            $d['ts']=$ts;
-            $d['colname']=$name;
-            $d['metadata']=$unit;
-            $d['value']=$value;
-            $data[] = $d;
+            $data[] = ['ts'=>$ts, 'colname'=>$name, 'metadata'=>$unit, 'val'=>$value];
         });
 
         if($cols !== null)
@@ -84,6 +80,37 @@ class OticReader extends OticBase
             $data = [];
         }
         $this->close();
+    }
+
+    public function generate(array $cols = null) {
+        $this->channel = $this->unpacker->selectChannel(1, function (){});
+        if($cols !== null)
+            $this->channel->setFetchList(...$cols);
+        $skips=0;
+        $i=0;
+        while (1)
+        {
+//            $i++;
+            $z = $this->unpacker->generate();
+            if(is_array($z)) {
+                if(count($z)!==5) {
+//                    $skips++;
+                    continue;
+                }
+                yield $z;
+            }
+            $z = $this->unpacker->generate();
+//            $skips++;
+            if ($z === null) {
+                $skips++;
+                $excess = $i-$skips;
+                echo "break in line $i. skipped $skips. excess $excess\n";
+                break;
+            }
+        };
+
+        $this->close();
+
     }
 
 }

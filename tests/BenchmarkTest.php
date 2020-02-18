@@ -29,9 +29,11 @@ class BenchmarkTest extends TestCase
         $writer->open("/tmp/outbench.otic");
 
         phore_out("start writing");
+        $count=0;
         for ($i=0; $i<8640; $i++) {
             for ($i2=0; $i2<100; $i2++) {
-                $writer->inject($i, "someName" . $i2, "moo" . ($i + $i2), "someMu");
+                $count++;
+                $writer->inject($count, "someName" . $i2, "v$i.$i2", "string");
             }
         }
         phore_out("end writing");
@@ -40,8 +42,6 @@ class BenchmarkTest extends TestCase
         $this->assertTrue(true);
     }
 
-
-
     public function testBenchmarkReader()
     {
         $data = [];
@@ -49,10 +49,7 @@ class BenchmarkTest extends TestCase
         $reader->open("/tmp/outbench.otic");
         phore_out("start reading");
         $reader->setOnDataCallback(function ($timestamp, $colname, $unit, $value) use (&$data) {
-            $data[]['ts'] = $timestamp;
-            $data[]['name'] = $colname;
-            $data[]['unit'] = $unit;
-            $data[]['val'] = $value;
+            $data[] = ['ts'=>$timestamp, 'name'=>$colname, 'unit'=>$unit, 'val'=>$value];
         });
 
         $reader->read();
@@ -66,14 +63,23 @@ class BenchmarkTest extends TestCase
         $reader->open("/tmp/outbench.otic");
         phore_out("start reading generator");
         foreach ($reader->readGenerator() as $line) {
-            $data[]['ts'] = $line['ts'];
-            $data[]['name'] = $line['colname'];
-            $data[]['unit'] = $line['metadata'];
-            $data[]['val'] = $line['value'];
+            $data[] = $line;
         }
-        phore_out("end reading generator" . count($data));
+        phore_out("end reading generator: " . count($data));
         $this->assertTrue(true);
     }
+
+//    public function testBenchmarkReadGenerator2() {
+//        $data = [];
+//        $reader = new OticReader();
+//        $reader->open("/tmp/outbench.otic");
+//        phore_out("start reading generator2:\n");
+//        foreach ($reader->generate() as $line) {
+//            $data[] = $line;
+//        }
+//        phore_out("end reading generator2: " . count($data) ."\n");
+//        $this->assertTrue(true);
+//    }
 
 
 }
