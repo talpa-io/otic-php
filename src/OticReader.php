@@ -65,7 +65,7 @@ class OticReader extends OticBase
 
         $data = [];
         $this->setOnDataCallback(function ($ts, $name, $unit, $value) use (&$data)  {
-            $data[] = ['ts'=>$ts, 'colname'=>$name, 'metadata'=>$unit, 'val'=>$value];
+            $data[] = ['ts'=>$ts, 'colname'=>$name, 'metadata'=>$unit, 'value'=>$value];
         });
 
         if($cols !== null)
