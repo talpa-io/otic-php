@@ -49,7 +49,7 @@ class BenchmarkTest extends TestCase
         $reader->open("/tmp/outbench.otic");
         phore_out("start reading");
         $reader->setOnDataCallback(function ($timestamp, $colname, $unit, $value) use (&$data) {
-            $data[] = ['ts'=>$timestamp, 'name'=>$colname, 'unit'=>$unit, 'val'=>$value];
+            $data = ['ts'=>$timestamp, 'name'=>$colname, 'unit'=>$unit, 'val'=>$value];
         });
 
         $reader->read();
@@ -57,17 +57,17 @@ class BenchmarkTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function testBenchmarkReadGenerator() {
-        $data = [];
-        $reader = new OticReader();
-        $reader->open("/tmp/outbench.otic");
-        phore_out("start reading generator");
-        foreach ($reader->readGenerator() as $line) {
-            $data[] = $line;
-        }
-        phore_out("end reading generator: " . count($data));
-        $this->assertTrue(true);
-    }
+//    public function testBenchmarkReadGenerator() {
+//        $data = [];
+//        $reader = new OticReader();
+//        $reader->open("/tmp/outbench.otic");
+//        phore_out("start reading generator");
+//        foreach ($reader->readGenerator() as $line) {
+//            $data[] = $line;
+//        }
+//        phore_out("end reading generator: " . count($data));
+//        $this->assertTrue(true);
+//    }
 
 //    public function testBenchmarkReadGenerator2() {
 //        $data = [];
