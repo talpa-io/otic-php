@@ -43,9 +43,9 @@ class OticReader extends OticBase
         return $this->channel->getTimeInterval();
     }
 
-    public function read(array $cols = null) : int
+    public function read(array $cols = []) : int
     {
-        if($cols !== null)
+        if(!empty($cols))
             $this->channel->setFetchList(...$cols);
 
         while (!feof($this->file)) {
@@ -61,14 +61,14 @@ class OticReader extends OticBase
         fclose($this->file);
     }
 
-    public function readGenerator(array $cols = null) {
+    public function readGenerator(array $cols = []) {
 
         $data = [];
         $this->setOnDataCallback(function ($ts, $name, $unit, $value) use (&$data)  {
             $data[] = ['ts'=>$ts, 'colname'=>$name, 'metadata'=>$unit, 'value'=>$value];
         });
 
-        if($cols !== null)
+        if(!empty($cols))
             $this->channel->setFetchList(...$cols);
 
         while (!feof($this->file)) {
@@ -82,9 +82,9 @@ class OticReader extends OticBase
         $this->close();
     }
 
-    public function generate(array $cols = null) {
+    public function generate(array $cols = []) {
         $this->channel = $this->unpacker->selectChannel(1, function (){});
-        if($cols !== null)
+        if(!empty($cols))
             $this->channel->setFetchList(...$cols);
         $skips=0;
         $i=0;
