@@ -43,7 +43,7 @@ class OticReader extends OticBase
         return $this->channel->getTimeInterval();
     }
 
-    public function read(array $cols = []) : int
+    public function read(array $cols = [])
     {
         if(!empty($cols))
             $this->channel->setFetchList(...$cols);
@@ -52,8 +52,6 @@ class OticReader extends OticBase
             $this->unpacker->parse();
         }
         $this->close();
-
-        return 123;
     }
 
     public function close() {
