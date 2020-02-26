@@ -43,7 +43,7 @@ class OticReader extends OticBase
         return $this->channel->getTimeInterval();
     }
 
-    public function read(array $cols = [])
+    public function read(array $cols = null)
     {
         if(!empty($cols))
             $this->channel->setFetchList(...$cols);
@@ -88,17 +88,17 @@ class OticReader extends OticBase
         $i=0;
         while (1)
         {
-//            $i++;
+            $i++;
             $z = $this->unpacker->generate();
             if(is_array($z)) {
                 if(count($z)!==5) {
-//                    $skips++;
+                    $skips++;
                     continue;
                 }
                 yield $z;
             }
             $z = $this->unpacker->generate();
-//            $skips++;
+            $skips++;
             if ($z === null) {
                 $skips++;
                 $excess = $i-$skips;

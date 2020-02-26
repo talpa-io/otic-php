@@ -59,7 +59,7 @@ class OticWriter extends OticBase implements OticMiddleware
                 $value = (float)$value;
             } elseif (strpos($value, ".") !== false) {
                 $value = (float)$value;
-                if ($value < 0.00000000001 && $value > -0.0000000001)
+                if ($value < 0.0000000001 && $value > -0.0000000001)
                     $value = 0;
             } else {
                 $value = (int)$value;
