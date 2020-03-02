@@ -90,4 +90,33 @@ class WriterTest extends TestCase
         $this->writer->close();
     }
 
+    public function testStats() {
+        $names = [];
+        for($i=0; $i<200; $i++) {
+            $names[] = bin2hex(random_bytes(rand(30,90)));
+        }
+
+        $timestamp=1582612585.419277;
+        for ($i=0; $i<864; $i++) {
+            $timestamp+=1.123;
+            for ($i2=0; $i2<200; $i2++) {
+                $unit = "u$i2";
+                $name = $names[$i2];
+                $value = rand(0,999999) . "." . rand(0,9999);
+                $this->writer->inject($timestamp, $name, $value, $unit);
+            }
+        }
+        $this->writer->close();
+
+        $data = [];
+        $reader = new OticReader();
+        $reader->open("/tmp/out.otic");
+        $reader->setOnDataCallback(function ($timestamp, $colname, $unit, $value) {
+//            $data =  [$timestamp, $colname, $unit, $value];
+        });
+        $reader->read();
+
+        echo $data[1235];
+    }
+
 }

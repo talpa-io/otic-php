@@ -45,18 +45,34 @@ class BenchmarkTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function testBenchmarkReader()
+    public function testBenchmarkReadAll()
     {
         $data = [];
         $count = 0;
         $reader = new OticReader();
         $reader->open("/tmp/outbench.otic");
-        phore_out("start reading");
+        phore_out("start reading all data");
         $reader->setOnDataCallback(function ($timestamp, $colname, $unit, $value) use (&$data, &$count) {
             $data = ['ts'=>$timestamp, 'name'=>$colname, 'unit'=>$unit, 'val'=>$value];
             $count++;
         });
         $reader->read();
+        phore_out("end reading ($count lines)");
+        $this->assertTrue(true);
+    }
+
+    public function testBenchmarkReadSelection()
+    {
+        $data = [];
+        $count = 0;
+        $reader = new OticReader();
+        $reader->open("/tmp/outbench.otic");
+        phore_out("start reading two columns");
+        $reader->setOnDataCallback(function ($timestamp, $colname, $unit, $value) use (&$data, &$count) {
+            $data = ['ts'=>$timestamp, 'name'=>$colname, 'unit'=>$unit, 'val'=>$value];
+            $count++;
+        });
+        $reader->read(["s120","s121"]);
         phore_out("end reading ($count lines)");
         $this->assertTrue(true);
     }
