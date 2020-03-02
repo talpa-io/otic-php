@@ -6,15 +6,15 @@ namespace Otic;
 
 class OticReader extends OticBase
 {
-    private $file;
-    /**
-     * @var OticUnpack
-     */
-    private $unpacker;
     /**
      * @var OticUnpackChannel
      */
     private $channel;
+    /**
+     * @var OticUnpack
+     */
+    private $unpacker;
+    private $file;
 
     public $datasetsRead = 0;
 

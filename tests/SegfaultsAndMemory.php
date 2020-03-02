@@ -9,7 +9,7 @@ if (file_exists(__DIR__ . "/../vendor/autoload.php")) {
     require __DIR__ . "/../../../autoload.php";
 }
 
-testRandomBytes();
+//testRandomBytes();
 function testRandomBytes() {
     echo __FUNCTION__."\n";
     $names = [];
@@ -104,7 +104,7 @@ function testMemoryCorruptionWhenWritingRandomNamesWithPrefixAndIncreasingLength
     $writer->close();
 }
 
-//testMemoryCorruptionWhenWritingRandomNamesWithPrefixAndRandomLength();
+testMemoryCorruptionWhenWritingRandomNamesWithPrefixAndRandomLength();
 function testMemoryCorruptionWhenWritingRandomNamesWithPrefixAndRandomLength() {
     echo __FUNCTION__."\n";
     $writer = new OticWriter();
@@ -112,7 +112,7 @@ function testMemoryCorruptionWhenWritingRandomNamesWithPrefixAndRandomLength() {
     $names = [];
     for($i=1;$i<260;$i++) {
         try {
-            $names[] = "prefix" . bin2hex(random_bytes(rand(10,30)));
+            $names[] = bin2hex(random_bytes(rand(60,126)));
         } catch (\Error $e) {
             echo "error:" . $e->getMessage()."\n";
         } catch (Exception $err) {
@@ -121,7 +121,7 @@ function testMemoryCorruptionWhenWritingRandomNamesWithPrefixAndRandomLength() {
     }
     foreach ($names as $i => $name) {
         echo $i . ": " . $name . "\n";
-        $writer->inject(1582612585, $name, 132, "kpi");
+        $writer->inject(1582612585, $name, 132, "kkll");
     }
     if(count($names)===99) {
         echo "\ntest successful\n";

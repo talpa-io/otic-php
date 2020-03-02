@@ -11,9 +11,9 @@ use Otic\OticPackChannel;
 
 class OticWriter extends OticBase implements OticMiddleware
 {
-    private $file;
     private $packer;
     private $columns;
+    private $file;
     /**
      * @var OticPackChannel
      */

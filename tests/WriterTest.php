@@ -10,35 +10,84 @@ namespace OticTest;
 
 //engine__1_engine_turbocharger_1_compressor_intake_pressure
 
+use Otic\LibOticException;
 use Otic\OticReader;
 use Otic\OticWriter;
 use PHPUnit\Framework\TestCase;
 
 class WriterTest extends TestCase
 {
-    public function WriterWritesData()
+    private $writer;
+
+    protected function setUp(): void
     {
+        $this->writer = new OticWriter();
+        $this->writer->open("/tmp/out.otic");
+    }
 
-        $writer = new OticWriter();
-        $writer->open("/tmp/out.otic");
+    protected function tearDown(): void
+    {
+//        $this->writer->close();
+    }
 
-        $ts = "1582612585.419277";
-        $name = "engine__1_engine_turbocharger_1_compressor_intake_pressure";
-        $unit = "float";
-        $value = "98.7500000000000000";
+    public function testExceptionMaxLenghtNameUnit() {
+        $name = bin2hex(random_bytes(64));
+        $unit = bin2hex(random_bytes(64));
 
-        $writer->inject($ts, $name, $value, $unit);
+        $this->expectException(LibOticException::class);
+        $this->expectExceptionMessage("Buffer Overflow");
 
-        $writer->close();
+        $this->writer->inject(1582612585, $name, 123, $unit);
+        $this->writer->close();
+    }
 
+    public function testExceptionValueTooBig() {
+        $value = bin2hex(random_bytes(128));
 
+        $this->expectException(LibOticException::class);
+        $this->expectExceptionMessage("Buffer Overflow");
+
+        $this->writer->inject(1582612585, "name", $value, "unit");
+        $this->writer->close();
+    }
+
+    public function testWriteReadTsZero() {
+        $this->writer->inject(0, "name", "value", "unit");
+        $this->writer->close();
+
+        $data = [];
         $reader = new OticReader();
         $reader->open("/tmp/out.otic");
-        $reader->setOnDataCallback(function ($timestamp, $colname, $value, $mu) {
-//            echo "\n$timestamp;$colname;$value;$mu";
+        $reader->setOnDataCallback(function ($timestamp, $colname, $unit, $value) use (&$data) {
+            $data =  [$timestamp, $colname, $unit, $value];
         });
         $reader->read();
+        $this->assertEquals([0.0,"name", "unit", "value"], $data);
+    }
 
+    public function testRandomNames() {
+        for($i=0;$i<1000;$i++) {
+            $name = bin2hex(random_bytes(rand(30, 90)));
+            $this->writer->inject(1582612585, $name, 132, "kpi");
+        }
+        $this->writer->close();
+    }
+
+    public function testDescendingTimestamps() {
+        $this->writer->inject(1582612585, "name", 132, "kpi");
+        $this->expectException(LibOticException::class);
+        $this->expectExceptionMessage("Invalid Timestamp");
+        $this->writer->inject(1582612580, "name", 132, "kpi");
+        $this->writer->close();
+    }
+
+    public function testTimestampSmallFloat() {
+        for($i=0;$i<10;$i++) {
+            $n = 1582612585+$i;
+            $ts = "$n." . pow(11,$i) . "7";
+            $this->writer->inject($ts, "name", 132, "kpi");
+        }
+        $this->writer->close();
     }
 
 }
