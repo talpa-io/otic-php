@@ -10,8 +10,21 @@ composer require talpa/otic-php
 vendor/talpa/otic-php/lib/install-otic-extension.sh
 ```
 
+## Notes
+Otic entries consist of 4 fields:
+
+| Field | Types | Notes |
+|---|---|---|
+| Timestamp | float | internally stored with 4 decimals, rounded down |
+|Name| string | Length restrictions:|
+|Unit| string |  Name+Unit < 255 characters  |
+|Value| int/float/string |---|
 
 
+#####Example:
+| Timestamp | Name | Unit | Value |
+|---|---|---|---|
+| 1582612681.9972 | acceleration | m/s² | 9.81 |
 
 ## Example
 
@@ -19,7 +32,7 @@ vendor/talpa/otic-php/lib/install-otic-extension.sh
 ## Install OTIC PHP Extension
 
 ```bash
-lib/install-urdsfmt.sh
+lib/install-otic-extension.sh
 ```
 
 ## Using the command line tool
@@ -30,8 +43,9 @@ Compress data from stdin and save to file
 ```
 
 ## Benchmarks
+Benchmark results for urdsfmt and libotic
 
-
-| Interval | Schreiben | Lesen |
-|----------|-----------|-------|
-|          |           |       |
+| Library | Lines | Write | Read All | Read Selection (2) |
+|---------|-------|-------|----------|----------------|
+| urdsfmt | 10,368,000 | 35.123s | 17.227s | 0.541s |
+| libotic | 10,368,000 | 26.478s | 6.794s | 0.348s |
