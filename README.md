@@ -18,7 +18,7 @@ Otic entries consist of 4 fields:
 | Timestamp | float | internally stored with 4 decimals, rounded down |
 |Name| string | Length restrictions:|
 |Unit| string |  Name+Unit < 255 characters  |
-|Value| int/float/string |---|
+|Value| bool/int/float/string/null | max 255 Bytes|
 
 
 #####Example:
