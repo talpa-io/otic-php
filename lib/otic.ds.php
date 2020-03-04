@@ -1,14 +1,4 @@
-<?php
-/**
- * This is only a DS file for code completion.
- *
- * Functionality is provided by libotic extension. Make sure
- * to have it loaded.
- *
- */
-namespace Otic;
-
-use Exception;
+<?php namespace Otic;
 
 /**
 *   Not inside the namespace: \a Otic
@@ -63,6 +53,9 @@ class OticPackChannel
     {
     }
     public function resizeBucket(): void
+    {
+    }
+    public function getStats(): array
     {
     }
     public function clearErrorFlag(): void
@@ -134,23 +127,18 @@ class OticUnpack
     public function __construct($fileHandle)
     {
     }
-
     public function __destruct()
     {
     }
-
-    public function __toString(): string
+    public function __toString() : string
     {
     }
-
     public function parse()
     {
     }
-
     public function selectChannel(int $channelId, callable $flusher): OticUnpackChannel
     {
     }
-
     public function close()
     {
     }

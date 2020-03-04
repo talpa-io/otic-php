@@ -91,7 +91,7 @@ class OticReaderWriterTest extends TestCase
     public function testNamesWithRandomLength() {
         $names = [];
         for($i=0; $i<200; $i++) {
-            $names[] = bin2hex(random_bytes(rand(30,61)));
+            $names[] = bin2hex(random_bytes(rand(30,123)));
         }
 
         $timestamp=1582612585.419277;
@@ -104,6 +104,7 @@ class OticReaderWriterTest extends TestCase
                 $this->writer->inject($timestamp, $name, $value, $unit);
             }
         }
+//        print_r($this->writer->getStats());
         $this->writer->close();
 
         $data = [];
@@ -207,5 +208,6 @@ class OticReaderWriterTest extends TestCase
         $reader->read(["fail"]);
         $this->assertEquals([], $data);
     }
+
 
 }

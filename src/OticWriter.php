@@ -69,4 +69,8 @@ class OticWriter extends OticBase implements OticMiddleware
 
 //        $this->writer->write($this->columns[$columnName], $timestamp, $value);
     }
+
+    public function getStats() {
+        return $this->channel->getStats();
+    }
 }
