@@ -4,6 +4,8 @@
 namespace Otic;
 
 
+use Phore\Core\Exception\NotFoundException;
+
 class OticReader extends OticBase
 {
     /**
@@ -18,9 +20,18 @@ class OticReader extends OticBase
 
     public $datasetsRead = 0;
 
-    public function open (string $filename)
+    public function open ($filename)
     {
-        $this->file = fopen($filename, "r");
+        if (is_string($filename)) {
+            $this->file = fopen($filename, "r");
+            if ($this->file === false)
+                throw new NotFoundException("Otic input file '$filename': Cannot open for reading");
+        } else {
+            if ( ! is_resource($filename))
+                throw new \InvalidArgumentException("Parameter 1 must be filename or file resource");
+            $this->file = $filename;
+        }
+
         $this->unpacker = new OticUnpack($this->file);
     }
 
