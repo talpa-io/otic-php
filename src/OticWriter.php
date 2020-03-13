@@ -77,6 +77,8 @@ class OticWriter extends OticBase implements OticMiddleware
             } else {
                 $value = (int)$value;
             }
+        } elseif (is_bool($value)) {
+            $value = (int)$value;
         }
         
         $this->writer->write($this->columns[$columnName], $timestamp, $value);
