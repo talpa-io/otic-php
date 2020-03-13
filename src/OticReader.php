@@ -65,7 +65,7 @@ class OticReader extends OticBase
             if ($this->firstTimestamp === null)
                 $this->firstTimestamp = $data["ts"];
 
-            ($this->callback)($data["ts"], $colname, $data["value"], $mu);
+            ($this->callback)($data["ts"], $colname, $mu, $data["value"]);
         }
         $this->lastTimestamp = $this->reader->get_closing_timestamp();
         $this->reader->close();
