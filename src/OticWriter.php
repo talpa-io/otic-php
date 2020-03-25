@@ -52,13 +52,25 @@ class OticWriter extends OticBase implements OticMiddleware
 
     public function inject (float $timestamp, string $columnName, $value, string $mu)
     {
-        $value  = $this->transformValue($value);
+//        $value = $this->transformValue($value);
+        $value = $this->transform($value);
         $this->channel->inject($timestamp, $columnName, $mu, $value);
 
     }
 
     public function getStats() {
         return $this->channel->getStats();
+    }
+
+    private function transform($value) {
+        if (is_numeric($value)) {
+            $intVal = (int)$value;
+            $floatVal = (float)$value;
+            return $intVal == $floatVal ? $intVal : $floatVal;
+        } else if ($value === "") {
+            return null;
+        }
+        return $value;
     }
 
     private function transformValue($value) {

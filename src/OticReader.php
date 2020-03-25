@@ -40,12 +40,12 @@ class OticReader extends OticBase
         $this->channel = $this->unpacker->selectChannel(1, $cb);
     }
 
-    public function getFirstTimestamp() : float
+    public function getFirstTimestamp() : ?float
     {
         return $this->getTimeInterval(1)[0];
     }
 
-    public function getLastTimestamp() : float
+    public function getLastTimestamp() : ?float
     {
         return $this->getTimeInterval(1)[1];
     }

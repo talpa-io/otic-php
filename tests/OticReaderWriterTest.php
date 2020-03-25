@@ -209,5 +209,20 @@ class OticReaderWriterTest extends TestCase
         $this->assertEquals([], $data);
     }
 
+    public function testTimeIntervalEmptyFile() {
+        $this->writer->close();
+
+        $reader = new OticReader();
+        $reader->open("/tmp/out.otic");
+        $dataSetsRead = 0;
+        $reader->setOnDataCallback(function ($timestamp, $colname, $unit, $value) use (&$dataSetsRead) {
+            $dataSetsRead++;
+        });
+        $reader->read();
+        $this->assertEquals(0, $dataSetsRead);
+        $this->assertNull($reader->getFirstTimestamp());
+        $this->assertNull($reader->getLastTimestamp());
+    }
+
 
 }
