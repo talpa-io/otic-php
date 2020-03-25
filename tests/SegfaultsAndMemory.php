@@ -9,7 +9,7 @@ if (file_exists(__DIR__ . "/../vendor/autoload.php")) {
     require __DIR__ . "/../../../autoload.php";
 }
 
-//testRandomBytes();
+testRandomBytes();
 function testRandomBytes() {
     echo __FUNCTION__."\n";
     $names = [];
@@ -54,7 +54,7 @@ function testSegfaultWhenWritingDifferentLengthNames() {
     $writer->close();
 }
 
-//testMemoryCorruptionWhenWritingRandomNamesWithIncreasingLength();
+testMemoryCorruptionWhenWritingRandomNamesWithIncreasingLength();
 function testMemoryCorruptionWhenWritingRandomNamesWithIncreasingLength() {
     echo __FUNCTION__."\n";
     $writer = new OticWriter();
@@ -76,7 +76,7 @@ function testMemoryCorruptionWhenWritingRandomNamesWithIncreasingLength() {
     $writer->close();
 }
 
-//testMemoryCorruptionWhenWritingRandomNamesWithPrefixAndIncreasingLength();
+testMemoryCorruptionWhenWritingRandomNamesWithPrefixAndIncreasingLength();
 function testMemoryCorruptionWhenWritingRandomNamesWithPrefixAndIncreasingLength() {
     echo __FUNCTION__."\n";
     $writer = new OticWriter();

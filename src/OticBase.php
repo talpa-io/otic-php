@@ -19,13 +19,6 @@ class OticBase
         }
     }
 
-//    protected function loadExtensionIfNeeded()
-//    {
-//        if ( ! extension_loaded("urdtsfmt")) {
-//            throw new \InvalidArgumentException("urdtsfmt extension missing");
-//        }
-//    }
-
     public function __construct()
     {
         $this->loadExtensionIfNeeded();

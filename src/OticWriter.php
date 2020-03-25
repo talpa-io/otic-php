@@ -52,6 +52,16 @@ class OticWriter extends OticBase implements OticMiddleware
 
     public function inject (float $timestamp, string $columnName, $value, string $mu)
     {
+        $value  = $this->transformValue($value);
+        $this->channel->inject($timestamp, $columnName, $mu, $value);
+
+    }
+
+    public function getStats() {
+        return $this->channel->getStats();
+    }
+
+    private function transformValue($value) {
         if ($value === "") {
             $value = null;
         } elseif (is_numeric($value)) {
@@ -65,12 +75,6 @@ class OticWriter extends OticBase implements OticMiddleware
                 $value = (int)$value;
             }
         }
-        $this->channel->inject($timestamp, $columnName, $mu, $value);
-
-//        $this->writer->write($this->columns[$columnName], $timestamp, $value);
-    }
-
-    public function getStats() {
-        return $this->channel->getStats();
+        return $value;
     }
 }
