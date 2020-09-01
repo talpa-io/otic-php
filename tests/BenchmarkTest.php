@@ -27,7 +27,6 @@ class BenchmarkTest extends TestCase
     {
         $writer = new OticWriter();
         $writer->open("/tmp/outbench.otic");
-
         $nTimestamps = 864;
         $nColumns = 120;
         $nLines = $nTimestamps + $nColumns;
@@ -80,5 +79,4 @@ class BenchmarkTest extends TestCase
         phore_out("end reading ($count lines)");
         $this->assertTrue(true);
     }
-
 }
