@@ -39,11 +39,13 @@ class OticReaderWriterTest extends TestCase
     public function testExceptionValueTooBig() {
         $value = bin2hex(random_bytes(128));
 
-        $this->expectException(LibOticException::class);
-        $this->expectExceptionMessage("Buffer Overflow");
+        // Variadic length values now allowed
+//        $this->expectException(LibOticException::class);
+//        $this->expectExceptionMessage("Buffer Overflow");
 
         $this->writer->inject(1582612585, "name", $value, "unit");
         $this->writer->close();
+        $this->assertTrue("This test works" == true);
     }
 
     public function testWriteReadTsZero() {
@@ -223,6 +225,4 @@ class OticReaderWriterTest extends TestCase
         $this->assertNull($reader->getFirstTimestamp());
         $this->assertNull($reader->getLastTimestamp());
     }
-
-
 }
